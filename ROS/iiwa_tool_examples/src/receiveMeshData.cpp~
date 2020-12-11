@@ -1,0 +1,206 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+#define BUF_SIZE 100
+#define buff_leng 64512
+
+
+void error_handling(char * message);
+int printOutput (unsigned char * mesh_arr, int size);
+
+
+unsigned char * mesh_arr = 0;
+int * datasize = 0;
+FILE *ofp;
+
+
+
+//FILE *ifp;
+//double * pos_arr = 0;
+//int size;
+
+//server->client로 조인트 float 값 보낸다
+//float jointArray[7] = { 0.0 };
+//float temp[7] = { 0.0 };
+//bool jointchanged[7] = { false };
+
+int main(int argc, char * argv[]) {
+	//int loop = 0;
+
+	int serv_sock;
+	char message[BUF_SIZE];//받는 용
+	int str_len;
+	socklen_t clnt_adr_sz;
+	
+	int loopnum;
+	int lastdatasize;
+	int i;
+
+	char ServerReady[5] = {'R','E','A','D','Y'};
+	unsigned char buff[buff_leng];
+
+
+
+	//unsigned char floatTobyte[28];
+	//uint8_t * pointer = (uint8_t *)jointArray;
+
+	struct sockaddr_in serv_adr;
+	struct sockaddr_in clnt_adr;
+
+
+	if (argc != 2) {
+		printf("Usage : %s <port>\n", argv[0]);
+		exit(1);
+	}
+
+	serv_sock = socket(PF_INET, SOCK_DGRAM, 0);
+	if (serv_sock == -1) {
+		error_handling("UDP socket creation error");
+	}
+	else {
+		printf("success to creating UDP socket\n");
+	}
+
+	memset(&serv_adr, 0, sizeof(serv_adr));
+	serv_adr.sin_family = AF_INET;
+	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serv_adr.sin_port = htons(atoi(argv[1]));
+
+	if (bind(serv_sock, (struct sockaddr *)&serv_adr, sizeof(serv_adr)) == -1) {
+		error_handling("bind() error");
+	}
+	else {
+		printf("success to binding\n");
+	}
+
+	clnt_adr_sz = sizeof(clnt_adr);
+
+	//Receive 'hello'
+	str_len = recvfrom(serv_sock, message, BUF_SIZE, 0, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
+	message[str_len] = 0;
+	printf("Received from Client: %s\n", message);
+
+	//Receive data size
+	str_len = recvfrom(serv_sock, message, BUF_SIZE, 0, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
+	message[str_len] = 0;
+	
+	datasize = (int *)message;
+	printf("Received data size = %d\n", *datasize);
+	
+	loopnum = (*datasize)/buff_leng;
+	lastdatasize = (*datasize)%buff_leng;
+	
+	//Create mesh data array
+	mesh_arr = (unsigned char *)malloc(sizeof(unsigned char)*(*datasize));
+	
+	//Send ServerReady
+	if (sendto(serv_sock, ServerReady, 5, 0, (struct sockaddr *)&clnt_adr, clnt_adr_sz) == -1) {
+		error_handling("sendto() error");
+	}
+	else {
+		printf("Server READY\n");
+	}	
+
+	//Receive mesh data
+	for (i=0; i<loopnum; i++) {
+		str_len = recvfrom(serv_sock, buff, buff_leng, 0, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
+		memcpy (&mesh_arr[i*buff_leng], buff, buff_leng);		
+		//&mesh_arr[i*buff_leng]	
+	}
+	str_len = recvfrom(serv_sock, buff, buff_leng, 0, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
+	memcpy (&mesh_arr[loopnum*buff_leng], buff, lastdatasize);	
+	//&mesh_arr[loopnum*buff_leng]
+	
+	printf("All data Received\n");
+
+	//Receive mesh data
+	//str_len = recvfrom(serv_sock, mesh_arr, *datasize, 0, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
+	
+
+
+
+
+
+	//Print mesh data
+	if (printOutput(&mesh_arr[0], *datasize) != 1) {
+		printf("Failed to print output!\n");
+	} else {
+		printf("Print out mapping data\n");
+        }
+
+
+
+
+/*	
+	while (loop != (size/7)) {
+		//convert double to float
+		jointArray[0] = (float)pos_arr[loop*7];
+		jointArray[1] = (float)pos_arr[loop*7+1];
+		jointArray[2] = (float)pos_arr[loop*7+2];
+		jointArray[3] = (float)pos_arr[loop*7+3];
+		jointArray[4] = (float)pos_arr[loop*7+4];
+		jointArray[5] = (float)pos_arr[loop*7+5];
+		jointArray[6] = (float)pos_arr[loop*7+6];
+
+		printf("=================================State %d\n", loop+1);
+
+		for (int i = 0; i<sizeof(jointArray); i++) {//0-27
+			floatTobyte[i] = pointer[i];*/
+			/*
+			if (i % 4 == 0) {
+				printf("joint %d\n", i / 4 + 1);
+			}
+			printf("------------%x\n", pointer[i]);
+			*/
+/*		}
+
+		if (sendto(serv_sock, floatTobyte, 28, 0, (struct sockaddr *)&clnt_adr, clnt_adr_sz) == -1) {
+			error_handling("sendto() error");
+		}
+
+		usleep(1400000);
+
+		loop++;
+	}
+
+*/
+
+	close(serv_sock);
+	free(mesh_arr);
+
+	return 0;
+}
+
+void error_handling(char * message) {
+	fputs(message, stderr);
+	fputc('\n', stderr);
+	exit(1);
+}
+
+int printOutput (unsigned char * mesh_arr, int size) {
+	int i;
+	float * data;
+
+	ofp = fopen("/home/glab/hj/src/iiwa_tool-master/iiwa_tool_examples/src/mappping_data.txt", "w");
+  	if(!ofp) {
+    		printf("Can't open output file\n");
+		return -1;
+	}
+	
+	
+  	fprintf(ofp, "%d\n", size);
+
+  	for (i=0; i<(size/4); i++) {
+		data = (float *)(&mesh_arr[4*i]);
+
+    		fprintf(ofp, "%f ", *data);
+		//printf("%f ", *data);
+  	}
+
+	fclose(ofp);
+	return 1;
+}

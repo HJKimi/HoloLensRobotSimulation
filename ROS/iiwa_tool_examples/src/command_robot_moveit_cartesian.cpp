@@ -1,0 +1,511 @@
+//Cartesian pose target input
+#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <unistd.h>
+//#include <arpa/inet.h>
+//#include <sys/socket.h>
+#include <vector>
+
+#include "ros/ros.h"
+#include "iiwa_msgs/JointPosition.h"
+#include "geometry_msgs/PoseStamped.h"
+
+#include <moveit/move_group_interface/move_group.h>
+#include <moveit/planning_interface/planning_interface.h>
+
+#include </opt/ros/indigo/include/moveit_msgs/DisplayRobotState.h>
+#include </opt/ros/indigo/include/moveit_msgs/DisplayTrajectory.h>
+
+//#define BUF_SIZE 100
+
+using namespace std;
+
+//for planning
+iiwa_msgs::JointPosition current_joint_position;
+geometry_msgs::PoseStamped current_cartesian_position, command_cartesian_position;
+geometry_msgs::Pose end, target_pose1;
+std::string joint_position_topic, cartesian_position_topic, movegroup_name, ee_link;
+moveit_msgs::RobotTrajectory trajectory;
+//robot_state::RobotState start_state;
+
+
+double ros_rate = 0.1;
+bool isRobotConnected = false;
+int setInput = 0;
+
+//for check the num of printing
+bool printStart = false;
+bool once = false;
+
+//for print a path in form of .txt
+FILE *ofp;
+
+//for sending float joint values from server to client
+//int portnum = 9190;
+//float jointArray[7] = { 0.0 };
+//float temp[7] = { 0.0 };
+//bool jointchanged[7] = { false };
+
+void jointPositionCallback(const iiwa_msgs::JointPosition& jp);
+void cartesianPositionCallback(const geometry_msgs::PoseStamped& ps);
+//void deduplication();
+void error_handling(char * message);
+int printOutput (double * pos_arr, int size);
+
+
+
+
+
+int main (int argc, char **argv) {
+  ROS_INFO("*******************MOVEIT CODE RUN*******************");
+  // Initialize ROS
+  ros::init(argc, argv, "CommandRobotMoveit");
+  ros::NodeHandle nh("~");
+
+  // ROS spinner.
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
+
+  // Dynamic parameters. Last arg is the default value. You can assign these from a launch file.
+  nh.param<std::string>("joint_position_topic", joint_position_topic, "/iiwa/state/JointPosition");
+  nh.param<std::string>("cartesian_position_topic", cartesian_position_topic, "/iiwa/state/CartesianPose");
+  nh.param<std::string>("move_group", movegroup_name, "manipulator");
+  nh.param<std::string>("ee_link", ee_link, "tool_link_ee");
+
+  // Dynamic parameter to choose the rate at wich this node should run
+  nh.param("ros_rate", ros_rate, 0.1); // 0.1 Hz = 10 seconds
+  ros::Rate* loop_rate_ = new ros::Rate(ros_rate);
+
+  // Subscribers and publishers
+  ros::Subscriber sub_joint_position = nh.subscribe(joint_position_topic, 1, jointPositionCallback);
+  ros::Subscriber sub_cartesian_position = nh.subscribe(cartesian_position_topic, 1, cartesianPositionCallback);
+
+ros::Publisher display_publisher = nh.advertise<moveit_msgs::DisplayTrajectory>("/move_group/display_planned_path", 1, true);
+moveit_msgs::DisplayTrajectory display_trajectory;
+
+  int direction = 1;
+
+  // Create MoveGroup
+  move_group_interface::MoveGroup group(movegroup_name);
+  moveit::planning_interface::MoveGroup::Plan myplan;
+
+  // Configure planner
+  group.setPlanningTime(0.5);
+  //group.setPlannerId(movegroup_name+"[RRTConnectkConfigDefault]");
+  //group.setPlannerId(movegroup_name+"[RRTkConfigDefault]");
+  //group.setPlannerId(movegroup_name+"[RRTConnect]");
+  group.setPlannerId("RRTConnectkConfigDefault");
+  /*
+  planner_configs:
+    - SBLkConfigDefault
+    - ESTkConfigDefault
+    - LBKPIECEkConfigDefault
+    - BKPIECEkConfigDefault
+    - KPIECEkConfigDefault
+    - RRTkConfigDefault
+    - RRTConnectkConfigDefault
+    - RRTstarkConfigDefault
+    - TRRTkConfigDefault
+    - PRMkConfigDefault
+    - PRMstarkConfigDefault
+  */
+  group.setEndEffectorLink(ee_link);
+
+  bool init = false;
+
+
+	//int serv_sock;
+	//char message[BUF_SIZE];//for receive
+	//int str_len;
+	//socklen_t clnt_adr_sz;
+
+	//unsigned char floatTobyte[28];
+	//uint8_t * pointer = (uint8_t *)jointArray;
+
+	//struct sockaddr_in serv_adr;
+	//struct sockaddr_in clnt_adr;
+
+
+  while (ros::ok()) {
+    if(isRobotConnected && !init) {
+      if(setInput==1 && !printStart) {
+        ROS_INFO("***************Current Cartesian Position is : [ %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f]",
+        current_cartesian_position.pose.position.x,
+        current_cartesian_position.pose.position.y,
+        current_cartesian_position.pose.position.z,
+        current_cartesian_position.pose.orientation.x,
+        current_cartesian_position.pose.orientation.y,
+        current_cartesian_position.pose.orientation.z,
+        current_cartesian_position.pose.orientation.w);
+
+        //start_state(*group.getCurrentState());
+        //robot_state::RobotState start_state(*group.getCurrentState());
+
+        //start = current_cartesian_position;
+
+        target_pose1.position.x = current_cartesian_position.pose.position.x;
+        target_pose1.position.y = current_cartesian_position.pose.position.y;
+        target_pose1.position.z = current_cartesian_position.pose.position.z;
+        target_pose1.orientation.x = current_cartesian_position.pose.orientation.x;
+        target_pose1.orientation.y = current_cartesian_position.pose.orientation.y;
+        target_pose1.orientation.z = current_cartesian_position.pose.orientation.z;
+        target_pose1.orientation.w = current_cartesian_position.pose.orientation.w;
+
+
+        //group.setStartStateToCurrentState();
+        //group.setStartState(start);
+        group.setPoseTarget(target_pose1);
+
+        ROS_INFO("**********SET START");
+
+        bool success = group.plan(myplan);
+        ROS_INFO("*****************Visualizing plan 1 (pose goal) %s",success?"":"FAILED");
+
+        printStart = true;
+
+
+/*
+        if (setInput==2) {
+          ROS_INFO("***********Current Cartesian Position is : [ %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f]",
+          current_cartesian_position.pose.position.x,
+          current_cartesian_position.pose.position.y,
+          current_cartesian_position.pose.position.z,
+          current_cartesian_position.pose.orientation.x,
+          current_cartesian_position.pose.orientation.y,
+          current_cartesian_position.pose.orientation.z,
+          current_cartesian_position.pose.orientation.w);
+
+
+
+          end.position.x = current_cartesian_position.pose.position.x;
+          end.position.y = current_cartesian_position.pose.position.y;
+          end.position.z = current_cartesian_position.pose.position.z;
+          end.orientation.x = current_cartesian_position.pose.orientation.x;
+          end.orientation.y = current_cartesian_position.pose.orientation.y;
+          end.orientation.z = current_cartesian_position.pose.orientation.z;
+          end.orientation.w = current_cartesian_position.pose.orientation.w;
+
+          const robot_state::JointModelGroup *joint_model_group =
+                  start_state.getJointModelGroup(group.getName());
+          start_state.setFromIK(joint_model_group, end);
+          group.setStartState(start_state);
+
+          //group.setPoseTarget(end);
+          ROS_INFO("************SET END");
+
+          init = true;
+          printStart = true;
+
+        }
+*/
+
+      }
+
+      else if(setInput==2) {
+        ROS_INFO("***********Current Cartesian Position is : [ %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f]",
+        current_cartesian_position.pose.position.x,
+        current_cartesian_position.pose.position.y,
+        current_cartesian_position.pose.position.z,
+        current_cartesian_position.pose.orientation.x,
+        current_cartesian_position.pose.orientation.y,
+        current_cartesian_position.pose.orientation.z,
+        current_cartesian_position.pose.orientation.w);
+
+
+
+        end.position.x = current_cartesian_position.pose.position.x;
+        end.position.y = current_cartesian_position.pose.position.y;
+        end.position.z = current_cartesian_position.pose.position.z;
+        end.orientation.x = current_cartesian_position.pose.orientation.x;
+        end.orientation.y = current_cartesian_position.pose.orientation.y;
+        end.orientation.z = current_cartesian_position.pose.orientation.z;
+        end.orientation.w = current_cartesian_position.pose.orientation.w;
+/*
+        const robot_state::JointModelGroup *joint_model_group =
+                start_state.getJointModelGroup(group.getName());
+        start_state.setFromIK(joint_model_group, end);
+        group.setStartState(start_state);
+*/
+        group.setPoseTarget(end);
+        ROS_INFO("************SET END");
+
+        init = true;
+      }
+    }//if(isRobotConnected && !init)
+
+    else if (isRobotConnected && init) {
+      bool success = group.plan(myplan);
+      ROS_INFO("*****************Visualizing plan 1 (pose goal) %s",success?"":"FAILED");
+
+//display trajectory
+	display_trajectory.trajectory_start = myplan.start_state_;
+    	display_trajectory.trajectory.push_back(myplan.trajectory_);
+    	display_publisher.publish(display_trajectory);
+
+
+      //plan.trajectory_
+//========================
+/*struct Plan
+{
+     moveit_msgs::RobotState start_state_;
+     moveit_msgs::RobotTrajectory trajectory_;
+    double planning_time_;
+};
+*/
+//========================
+
+      if (success) {
+        group.execute(myplan);
+
+        if (!once) {//do this task only one time
+          trajectory = myplan.trajectory_;
+
+
+
+          /*
+          //----------------------------------------------------Print joint names
+          std::vector<string> names;
+          names = trajectory.joint_trajectory.joint_names;
+
+          std::vector<int>::size_type vectorSize2 = names.size();
+          ROS_INFO("The size of names = %i", vectorSize2);//num of points
+          for (int i=0; i<vectorSize2; i++) {
+            cout << names[i] << endl;
+          }
+          */
+
+          //----------------------------------------------------Store values of planned path
+          std::vector<trajectory_msgs::JointTrajectoryPoint> trajectory_points;
+          trajectory_points = trajectory.joint_trajectory.points;
+
+          std::vector<int>::size_type vectorSize = trajectory_points.size();
+          //ROS_INFO("The size of the vectorSize = %i", vectorSize);//num of points
+
+          std::vector<double> pos_arr;
+          int size;
+          //double * pointer = &pos_arr[0];
+
+          //put the all joint values to pos_arr vector
+          for (int i=0; i<vectorSize; i++) {
+            /*//Check the size of the positions array
+            std::vector<double> pos = trajectory.joint_trajectory.points[i].positions;
+            std::vector<int>::size_type vectorSize2 = pos.size();
+            ROS_INFO("The size of pos = %i", vectorSize2);//7
+            ROS_INFO("%f", trajectory.joint_trajectory.points[i].positions[0]);
+            */
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[0]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[1]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[2]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[3]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[4]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[5]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[6]);
+          }
+          size = pos_arr.size();
+
+          if (printOutput(&pos_arr[0], size) != 1) {
+		          printf("Failed to print output!\n");
+	        } else {
+            printf("Print out planned path\n");
+          }
+
+
+          /*//print all values of pos_arr
+          for (int i=0; i<pos_arr.size(); i++) {
+            ROS_INFO("pos_arr[%d] = %f", i, pos_arr[i]);
+          }
+          */
+
+          //----------------------------------------------------Setup Server
+          /*if (argc != 2) {
+            printf("Usage : %s <port>\n", argv[0]);
+            exit(1);
+          }
+          */
+          /*
+          serv_sock = socket(PF_INET, SOCK_DGRAM, 0);
+          if (serv_sock == -1) {
+            error_handling("UDP socket creation error");
+          }
+          else {
+            printf("success to creating UDP socket\n");
+          }
+
+          memset(&serv_adr, 0, sizeof(serv_adr));
+          serv_adr.sin_family = AF_INET;
+          serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
+          //serv_adr.sin_port = htons(atoi(argv[1]));
+          serv_adr.sin_port = htons(portnum);
+
+          if (bind(serv_sock, (struct sockaddr *)&serv_adr, sizeof(serv_adr)) == -1) {
+            error_handling("bind() error");
+          }
+          else {
+            printf("success to binding\n");
+          }
+
+          //----------------------------------------------------Handshake
+          clnt_adr_sz = sizeof(clnt_adr);
+          str_len = recvfrom(serv_sock, message, BUF_SIZE, 0, (struct sockaddr *)&clnt_adr, &clnt_adr_sz);
+          message[str_len] = 0;
+          printf("Received from Client: %s\n", message);
+
+          if (sendto(serv_sock, message, str_len, 0, (struct sockaddr *)&clnt_adr, clnt_adr_sz) == -1) {
+            error_handling("sendto() error");
+          }
+          else {
+            printf("success to sending message\n");
+          }
+
+          */
+
+          /*
+          //----------------------------------------------------Send values of planned path
+          //Divide pos_arr by the joint values ​​corresponding to one state and
+          //Move to jointArray
+          for (int i=0; i<vectorSize; i++) {
+            //convert double to float
+            jointArray[0] = (float)pos_arr[i*7];
+            jointArray[1] = (float)pos_arr[i*7+1];
+            jointArray[2] = (float)pos_arr[i*7+2];
+            jointArray[3] = (float)pos_arr[i*7+3];
+            jointArray[4] = (float)pos_arr[i*7+4];
+            jointArray[5] = (float)pos_arr[i*7+5];
+            jointArray[6] = (float)pos_arr[i*7+6];
+
+            //28byte
+    				for (i = 0; i<sizeof(jointArray); i++) {//0-27
+    					floatTobyte[i] = pointer[i];
+    					if (i % 4 == 0) {
+    						//ROS_INFO("joint %d", i / 4 + 1);
+    						printf("joint %d\n", i / 4 + 1);
+    					}
+    					//ROS_INFO("------------%x", pointer[i]);
+    					printf("------------%x\n", pointer[i]);
+    				}
+
+    				if (sendto(serv_sock, floatTobyte, 28, 0, (struct sockaddr *)&clnt_adr, clnt_adr_sz) == -1) {
+    					error_handling("sendto() error");
+    				}
+
+          }
+          */
+
+
+          once = true;
+        }//if (!once)
+        //group.move();
+      }
+      //=============================================why?
+      loop_rate_->sleep(); // Sleep for some millisecond. The while loop will run every 10 seconds in this example.
+    }//else if (isRobotConnected && init)
+
+    else {
+      ROS_ERROR("*****************Robot is not connected...");
+      ros::Duration(3.0).sleep(); // 5 seconds
+    }
+
+  }//while
+
+  std::cerr<<"Stopping spinner..."<<std::endl;
+  spinner.stop();
+
+  std::cerr<<"Bye!"<<std::endl;
+
+  return 0;
+};
+
+void jointPositionCallback(const iiwa_msgs::JointPosition& jp) {
+  if (!isRobotConnected)
+    isRobotConnected = !isRobotConnected;
+  current_joint_position = jp;
+}
+
+void cartesianPositionCallback(const geometry_msgs::PoseStamped& ps) {
+  if (!isRobotConnected)
+    isRobotConnected = !isRobotConnected;
+  current_cartesian_position = ps;
+
+  if(setInput<2)
+    setInput += 1;
+}
+
+//not used
+/*
+void deduplication() {
+	if (temp[0] == jointArray[0]) jointchanged[0] = false;
+	else
+	{
+		jointchanged[0] = true;
+		temp[0] == jointArray[0];
+	}
+
+	if (temp[1] == jointArray[1]) jointchanged[1] = false;
+	else
+	{
+		jointchanged[1] = true;
+		temp[1] == jointArray[1];
+	}
+
+	if (temp[2] == jointArray[2]) jointchanged[2] = false;
+	else
+	{
+		jointchanged[2] = true;
+		temp[2] == jointArray[2];
+	}
+
+	if (temp[3] == jointArray[3]) jointchanged[3] = false;
+	else
+	{
+		jointchanged[3] = true;
+		temp[3] == jointArray[3];
+	}
+
+	if (temp[4] == jointArray[4]) jointchanged[4] = false;
+	else
+	{
+		jointchanged[4] = true;
+		temp[4] == jointArray[4];
+	}
+
+	if (temp[5] == jointArray[5]) jointchanged[5] = false;
+	else
+	{
+		jointchanged[5] = true;
+		temp[5] == jointArray[5];
+	}
+
+	if (temp[6] == jointArray[6]) jointchanged[6] = false;
+	else
+	{
+		jointchanged[6] = true;
+		temp[6] == jointArray[6];
+	}
+}
+*/
+
+void error_handling(char * message) {
+	fputs(message, stderr);
+	fputc('\n', stderr);
+	exit(1);
+}
+
+int printOutput (double * pos_arr, int size) {
+	int i;
+
+	ofp = fopen("/home/glab/hj/src/iiwa_tool-master/iiwa_tool_examples/src/planning_output.txt", "w");
+  if(!ofp) {
+    printf("Can't open output file\n");
+		return -1;
+  }
+
+  fprintf(ofp, "%d\n", size);
+
+  for (i=0; i<size; i++) {
+    fprintf(ofp, "%f ", pos_arr[i]);
+  }
+
+	fclose(ofp);
+	return 1;
+}

@@ -1,0 +1,269 @@
+//Joint angle target input
+
+#include <stdio.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <unistd.h>
+//#include <arpa/inet.h>
+//#include <sys/socket.h>
+#include <vector>
+
+#include "ros/ros.h"
+#include "iiwa_msgs/JointPosition.h"
+#include "geometry_msgs/PoseStamped.h"
+
+#include <moveit/move_group_interface/move_group.h>
+#include <moveit/planning_interface/planning_interface.h>
+
+#include </opt/ros/indigo/include/moveit/planning_scene_interface/planning_scene_interface.h>
+#include </opt/ros/indigo/include/moveit_msgs/DisplayRobotState.h>
+#include </opt/ros/indigo/include/moveit_msgs/DisplayTrajectory.h>
+
+//#define BUF_SIZE 100
+
+using namespace std;
+
+//for planning
+iiwa_msgs::JointPosition current_joint_position;
+geometry_msgs::PoseStamped current_cartesian_position, command_cartesian_position;
+geometry_msgs::Pose end, target_pose1;
+std::string joint_position_topic, cartesian_position_topic, movegroup_name, ee_link;
+moveit_msgs::RobotTrajectory trajectory;
+//robot_state::RobotState start_state;
+
+
+double ros_rate = 0.1;
+bool isRobotConnected = false;
+int setInput = 0;
+
+//for check the num of printing
+bool printStart = false;
+bool once = false;
+
+//for print a path in form of .txt
+FILE *ofp;
+
+//for sending float joint values from server to client
+//int portnum = 9190;
+//float jointArray[7] = { 0.0 };
+//float temp[7] = { 0.0 };
+//bool jointchanged[7] = { false };
+
+void jointPositionCallback(const iiwa_msgs::JointPosition& jp);
+void cartesianPositionCallback(const geometry_msgs::PoseStamped& ps);
+//void deduplication();
+void error_handling(char * message);
+int printOutput (double * pos_arr, int size);
+
+
+
+
+
+int main (int argc, char **argv) {
+  ROS_INFO("*******************MOVEIT CODE RUN*******************");
+  // Initialize ROS
+  ros::init(argc, argv, "CommandRobotMoveit");
+  ros::NodeHandle nh("~");
+
+  // ROS spinner.
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
+
+  // Dynamic parameters. Last arg is the default value. You can assign these from a launch file.
+  nh.param<std::string>("joint_position_topic", joint_position_topic, "/iiwa/state/JointPosition");
+  nh.param<std::string>("cartesian_position_topic", cartesian_position_topic, "/iiwa/state/CartesianPose");
+  nh.param<std::string>("move_group", movegroup_name, "manipulator");
+  nh.param<std::string>("ee_link", ee_link, "tool_link_ee");
+
+  // Dynamic parameter to choose the rate at wich this node should run
+  nh.param("ros_rate", ros_rate, 0.1); // 0.1 Hz = 10 seconds
+  ros::Rate* loop_rate_ = new ros::Rate(ros_rate);
+
+  // Subscribers and publishers
+  ros::Subscriber sub_joint_position = nh.subscribe(joint_position_topic, 1, jointPositionCallback);
+  ros::Subscriber sub_cartesian_position = nh.subscribe(cartesian_position_topic, 1, cartesianPositionCallback);
+
+ros::Publisher display_publisher = nh.advertise<moveit_msgs::DisplayTrajectory>("/move_group/display_planned_path", 1, true);
+moveit_msgs::DisplayTrajectory display_trajectory;
+
+  int direction = 1;
+
+  // Create MoveGroup
+  move_group_interface::MoveGroup group(movegroup_name);
+  moveit::planning_interface::MoveGroup::Plan myplan;
+  //??????????  
+  moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
+  // Configure planner
+  group.setPlanningTime(0.5);
+  group.setPlannerId("RRTConnectkConfigDefault");
+  /*
+  planner_configs:
+    - SBLkConfigDefault
+    - ESTkConfigDefault
+    - LBKPIECEkConfigDefault
+    - BKPIECEkConfigDefault
+    - KPIECEkConfigDefault
+    - RRTkConfigDefault
+    - RRTConnectkConfigDefault
+    - RRTstarkConfigDefault
+    - TRRTkConfigDefault
+    - PRMkConfigDefault
+    - PRMstarkConfigDefault
+  */
+  group.setEndEffectorLink(ee_link);
+
+  bool init = false;
+
+
+std::vector<double> group_variable_values1;
+
+
+std::vector<double> group_variable_values2;
+//0.160865 0.851374 0.162689 -1.591384 0.164391 -0.624105 -0.175158
+group_variable_values2.push_back(0.160865);
+group_variable_values2.push_back(0.851374);
+group_variable_values2.push_back(0.162689);
+group_variable_values2.push_back(-1.591384);
+group_variable_values2.push_back(0.164391);
+group_variable_values2.push_back(-0.624105);
+group_variable_values2.push_back(-0.175158);
+//group.getCurrentState()->copyJointGroupPositions(group.getCurrentState()->getRobotModel()->getJointModelGroup(group.getName()), group_variable_values1);
+
+  while (ros::ok()) {
+    if(!init) {
+	group.setJointValueTarget(group_variable_values1);  
+        ROS_INFO("**********SET START");
+        bool success = group.plan(myplan);
+        ROS_INFO("*****************Visualizing plan 1 (pose goal) %s",success?"":"FAILED");
+
+	display_trajectory.trajectory_start = myplan.start_state_;
+    	display_trajectory.trajectory.push_back(myplan.trajectory_);
+    	display_publisher.publish(display_trajectory);
+
+
+	group.setJointValueTarget(group_variable_values2);
+        ROS_INFO("************SET END");
+        success = group.plan(myplan); 
+        ROS_INFO("*****************Visualizing plan 2 (pose goal) %s",success?"":"FAILED");
+
+	display_trajectory.trajectory_start = myplan.start_state_;
+    	display_trajectory.trajectory.push_back(myplan.trajectory_);
+    	display_publisher.publish(display_trajectory);
+	
+	init = true;
+    }
+
+    else {
+	group.execute(myplan);
+ROS_INFO("************EXECUTE");
+	display_trajectory.trajectory_start = myplan.start_state_;
+    	display_trajectory.trajectory.push_back(myplan.trajectory_);
+    	display_publisher.publish(display_trajectory);
+
+///////////////////////////////////////////////////////
+if (!once) {
+trajectory = myplan.trajectory_;
+
+
+          /*
+          //----------------------------------------------------Print joint names
+          std::vector<string> names;
+          names = trajectory.joint_trajectory.joint_names;
+
+          std::vector<int>::size_type vectorSize2 = names.size();
+          ROS_INFO("The size of names = %i", vectorSize2);//num of points
+          for (int i=0; i<vectorSize2; i++) {
+            cout << names[i] << endl;
+          }
+          */
+
+          //----------------------------------------------------Store values of planned path
+          std::vector<trajectory_msgs::JointTrajectoryPoint> trajectory_points;
+          trajectory_points = trajectory.joint_trajectory.points;
+
+          std::vector<int>::size_type vectorSize = trajectory_points.size();
+          //ROS_INFO("The size of the vectorSize = %i", vectorSize);//num of points
+
+          std::vector<double> pos_arr;
+          int size;
+          //double * pointer = &pos_arr[0];
+
+          //put the all joint values to pos_arr vector
+          for (int i=0; i<vectorSize; i++) {
+            /*//Check the size of the positions array
+            std::vector<double> pos = trajectory.joint_trajectory.points[i].positions;
+            std::vector<int>::size_type vectorSize2 = pos.size();
+            ROS_INFO("The size of pos = %i", vectorSize2);//7
+            ROS_INFO("%f", trajectory.joint_trajectory.points[i].positions[0]);
+            */
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[0]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[1]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[2]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[3]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[4]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[5]);
+            pos_arr.push_back(trajectory.joint_trajectory.points[i].positions[6]);
+          }
+          size = pos_arr.size();
+
+          if (printOutput(&pos_arr[0], size) != 1) {
+		          printf("Failed to print output!\n");
+	        } else {
+            printf("Print out planned path\n");
+          }
+once =true;
+}
+////////////////////////////////////////////////////
+	loop_rate_->sleep(); 
+    }
+
+  }//end of while
+
+  std::cerr<<"Stopping spinner..."<<std::endl;
+  spinner.stop();
+
+  std::cerr<<"Bye!"<<std::endl;
+
+  return 0;
+};
+
+void jointPositionCallback(const iiwa_msgs::JointPosition& jp) {
+  if (!isRobotConnected)
+    isRobotConnected = !isRobotConnected;
+  current_joint_position = jp;
+
+ if(setInput<2)
+    setInput += 1;
+}
+
+void cartesianPositionCallback(const geometry_msgs::PoseStamped& ps) {
+  if (!isRobotConnected)
+    isRobotConnected = !isRobotConnected;
+  current_cartesian_position = ps; 
+}
+
+
+void error_handling(char * message) {
+	fputs(message, stderr);
+	fputc('\n', stderr);
+	exit(1);
+}
+
+int printOutput (double * pos_arr, int size) {
+	int i;
+
+	ofp = fopen("/home/glab/hj/src/iiwa_tool-master/iiwa_tool_examples/src/planning_output.txt", "w");
+  if(!ofp) {
+    printf("Can't open output file\n");
+		return -1;
+  }
+
+  fprintf(ofp, "%d\n", size);
+
+  for (i=0; i<size; i++) {
+    fprintf(ofp, "%f ", pos_arr[i]);
+  }
+
+	fclose(ofp);
+	return 1;
+}

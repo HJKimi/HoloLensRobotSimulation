@@ -1,0 +1,38 @@
+				group_variable_values1.push_back(-0.400078);
+				group_variable_values1.push_back(0.602474);
+				group_variable_values1.push_back(-0.126794);
+				group_variable_values1.push_back(-1.409570);
+				group_variable_values1.push_back(-0.150624);
+				group_variable_values1.push_back(0.140248);
+				group_variable_values1.push_back(-0.158617);
+
+				group_variable_values2.push_back(0.373684);
+				group_variable_values2.push_back(0.654827);
+				group_variable_values2.push_back(0.132620);
+				group_variable_values2.push_back(-1.439332);
+				group_variable_values2.push_back(0.025667);
+				group_variable_values2.push_back(0.672484);
+				group_variable_values2.push_back(0.445724);
+
+
+				group_variable_values1.push_back(0.563);
+				group_variable_values1.push_back(0.396);
+				group_variable_values1.push_back(0.129);
+				group_variable_values1.push_back(-1.572);
+				group_variable_values1.push_back(-0.127);
+				group_variable_values1.push_back(1.028);
+				group_variable_values1.push_back(0.611);
+
+				group_variable_values2.push_back(-0.394);
+				group_variable_values2.push_back(0.502);
+				group_variable_values2.push_back(-0.215);
+				group_variable_values2.push_back(-1.400);
+				group_variable_values2.push_back(-0.128);
+				group_variable_values2.push_back(1.161);
+				group_variable_values2.push_back(-0.321);
+0.563 0.396 0.129 -1.572 -0.127 1.028 0.611
+-0.394 0.502 -0.215 -1.400 -0.128 1.161 -0.321
+
+0.463, 0.521, -0.014, -1.956, -0.022, 0.498, 0.426
+-0.180, 0.527, -0.234, -1.724, -0.022, 0.884, -0.270
+

@@ -19,8 +19,10 @@ Addition:
 + In the code, for socket communication, port num: 9192 is used. You can change this number.
 + And all used function is C language so you can change this file to rcvMappingData.c
 
-Details:
-### int ReadInt (char * message)
-
+### Details:
+```C
+int ReadInt (char * message) {...}
+```
+This function inverts the order of char[] and converts to an integer. Because there is a different byte order between computers which is called host byte order. This can be solved using this fuction or just using htonl() in sending side and ntohl() in receiving side.
 
 ------------

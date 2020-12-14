@@ -29,5 +29,13 @@ This function inverts the order of char[] and converts to an integer. Because th
 int printOutput (unsigned char * mesh_arr, int byteSize) {...}
 ```
 This function creates a .txt file from received multiple mesh data. In each mesh data, there is 8 byte mesh header which contains the number of vertices(vertexCount) and the number of all indices of triangles(triangleIndexCount). And it has coordinates of all vertices(vertexCount * 3 * 4 byte) and list of 3 indices composing triangles(triangleIndexCount * 4 byte).
+```C
+int ConvertToOFF () {...}
+```
+This function creates .off files from a former .txt file. The created files are named with 'environment_mesh_*number*.off'.
+Each .off files are beginning with the keyword OFF.
+In second line, there are the number of vertices(vertexCount), the number of faces(triangleIndexCount/3), and the number of edges(0).
+From the third line, all vertices are listed with x, y, z coordinates. However, because the mesh data follows left-handed coordinate system (because of HoloLens), it needed to be corrected to right-handed coordinate system. So I changed sign of x coordinate.
+After the list of coordinates, all faces are listed. For each face, the number of vertices is specified, followed by indices of vertices.
 
 ------------

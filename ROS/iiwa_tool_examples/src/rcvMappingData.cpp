@@ -21,7 +21,7 @@ int meshNum = 0;
 
 int main (int argc, char * argv[]) {
 	int serv_sock, clnt_sock;
-	char message[BUF_SIZE];
+	unsigned char message[BUF_SIZE];
 	int str_len, recv_len;
 
 	struct sockaddr_in serv_adr;

@@ -8,7 +8,7 @@
 #define BUF_SIZE 1024
 
 void error_handling (const char * message);
-int ReadInt (char * message);
+int ReadInt (unsigned char * message);
 int printOutput (unsigned char * mesh_arr, int size);
 int ConvertToOFF ();
 int printMeshNum ();
@@ -132,7 +132,7 @@ void error_handling (const char * message) {
 	exit(1);
 }
 
-int ReadInt (char * message) {
+int ReadInt (unsigned char * message) {
 	unsigned char bytes[4];
 	unsigned char t;
 	int * datasize;

@@ -22,7 +22,7 @@ Addition:
 
 ### Details:
 ```C
-int ReadInt (char * message) {...}
+int ReadInt (unsigned char * message) {...}
 ```
 This function inverts the order of char[] and converts to an integer. Because there is a different byte order between computers which is called host byte order. This can be solved using this function or just using htonl() in sending side and ntohl() in receiving side.
 ```C

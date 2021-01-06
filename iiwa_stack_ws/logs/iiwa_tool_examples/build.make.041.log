@@ -1,0 +1,17 @@
+[  0%] Built target iiwa_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target command_robot_moveit[0m
+[ 20%] Built target rcvMoveCommand
+[ 40%] Built target rcvNewPose
+[ 60%] Built target rcvARPose
+[ 70%] [32mBuilding CXX object CMakeFiles/command_robot_moveit.dir/src/command_robot_moveit.cpp.o[0m
+[ 90%] Built target rcvMappingData
+[100%] [32m[1mLinking CXX executable /home/hj/iiwa_stack_ws/devel/.private/iiwa_tool_examples/lib/iiwa_tool_examples/command_robot_moveit[0m
+CMakeFiles/command_robot_moveit.dir/src/command_robot_moveit.cpp.o: In function `main':
+command_robot_moveit.cpp:(.text+0xd2): undefined reference to `meshNum2'
+collect2: error: ld returned 1 exit status
+CMakeFiles/command_robot_moveit.dir/build.make:184: recipe for target '/home/hj/iiwa_stack_ws/devel/.private/iiwa_tool_examples/lib/iiwa_tool_examples/command_robot_moveit' failed
+make[2]: *** [/home/hj/iiwa_stack_ws/devel/.private/iiwa_tool_examples/lib/iiwa_tool_examples/command_robot_moveit] Error 1
+CMakeFiles/Makefile2:141: recipe for target 'CMakeFiles/command_robot_moveit.dir/all' failed
+make[1]: *** [CMakeFiles/command_robot_moveit.dir/all] Error 2
+Makefile:140: recipe for target 'all' failed
+make: *** [all] Error 2

@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp
+iiwa_ros.hpp
+-
+cmath
+-
+

@@ -1,0 +1,6 @@
+[  0%] Built target iiwa_msgs_generate_messages_cpp
+[ 20%] Built target rcvARPose
+[ 40%] Built target rcvMoveCommand
+[ 60%] Built target rcvNewPose
+[ 80%] Built target command_robot_moveit
+[100%] Built target rcvMappingData

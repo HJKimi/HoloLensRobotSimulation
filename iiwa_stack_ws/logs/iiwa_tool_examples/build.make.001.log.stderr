@@ -1,0 +1,57 @@
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/setting_control_mode.cpp:3:10:[m[K [01;31m[Kfatal error: [m[Kiiwa_ros/conversions.h: No such file or directory
+ #include [01;31m[K<iiwa_ros/conversions.h>[m[K
+          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/setting_control_mode.dir/src/setting_control_mode.cpp.o] Error 1
+make[1]: *** [CMakeFiles/setting_control_mode.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:8:21:[m[K [01;31m[Kerror: [m[Kvariable or field ‘[01m[KsleepForMotion[m[K’ declared void
+ void sleepForMotion([01;31m[Kiiwa_ros[m[K::iiwaRos& iiwa, const double maxSleepTime) {
+                     [01;31m[K^~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:8:21:[m[K [01;31m[Kerror: [m[K‘[01m[Kiiwa_ros[m[K’ has not been declared
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:8:40:[m[K [01;31m[Kerror: [m[K‘[01m[Kiiwa[m[K’ was not declared in this scope
+ void sleepForMotion(iiwa_ros::iiwaRos& [01;31m[Kiiwa[m[K, const double maxSleepTime) {
+                                        [01;31m[K^~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:8:46:[m[K [01;31m[Kerror: [m[Kexpected primary-expression before ‘[01m[Kconst[m[K’
+ void sleepForMotion(iiwa_ros::iiwaRos& iiwa, [01;31m[Kconst[m[K double maxSleepTime) {
+                                              [01;31m[K^~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:31:3:[m[K [01;31m[Kerror: [m[K‘[01m[Kiiwa_ros[m[K’ has not been declared
+   [01;31m[Kiiwa_ros[m[K::iiwaRos my_iiwa;
+   [01;31m[K^~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:32:3:[m[K [01;31m[Kerror: [m[K‘[01m[Kmy_iiwa[m[K’ was not declared in this scope
+   [01;31m[Kmy_iiwa[m[K.init();
+   [01;31m[K^~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:43:3:[m[K [01;31m[Kerror: [m[K‘[01m[Kgeometry_msgs[m[K’ has not been declared
+   [01;31m[Kgeometry_msgs[m[K::PoseStamped command_cartesian_position;
+   [01;31m[K^~~~~~~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:44:3:[m[K [01;31m[Kerror: [m[K‘[01m[Kiiwa_msgs[m[K’ has not been declared
+   [01;31m[Kiiwa_msgs[m[K::JointPosition command_joint_position;
+   [01;31m[K^~~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:53:42:[m[K [01;31m[Kerror: [m[K‘[01m[Kcommand_cartesian_position[m[K’ was not declared in this scope
+         while (!my_iiwa.getCartesianPose([01;31m[Kcommand_cartesian_position[m[K)) {}
+                                          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:55:5:[m[K [01;31m[Kerror: [m[K‘[01m[Kcommand_cartesian_position[m[K’ was not declared in this scope
+     [01;31m[Kcommand_cartesian_position[m[K.pose.position.z -= direction * 0.10;
+     [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:58:42:[m[K [01;31m[Kerror: [m[K‘[01m[Kcommand_joint_position[m[K’ was not declared in this scope
+         while (!my_iiwa.getJointPosition([01;31m[Kcommand_joint_position[m[K)) {}
+                                          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:59:9:[m[K [01;31m[Kerror: [m[K‘[01m[Kcommand_joint_position[m[K’ was not declared in this scope
+         [01;31m[Kcommand_joint_position[m[K.position.a4 -= direction * 5 * M_PI / 180; // 0.0872665 // Adding/Subtracting 5 degrees (in radians) to the 4th joint
+         [01;31m[K^~~~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot.cpp:63:4:[m[K [01;31m[Kerror: [m[K‘[01m[KsleepForMotion[m[K’ was not declared in this scope
+    [01;31m[KsleepForMotion[m[K(my_iiwa, 2.0);
+    [01;31m[K^~~~~~~~~~~~~~[m[K
+make[2]: *** [CMakeFiles/command_robot.dir/src/command_robot.cpp.o] Error 1
+make[1]: *** [CMakeFiles/command_robot.dir/all] Error 2
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:17:3:[m[K [01;31m[Kerror: [m[K‘[01m[Kiiwa_ros[m[K’ has not been declared
+   [01;31m[Kiiwa_ros[m[K::iiwaRos my_iiwa;
+   [01;31m[K^~~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:18:3:[m[K [01;31m[Kerror: [m[K‘[01m[Kmy_iiwa[m[K’ was not declared in this scope
+   [01;31m[Kmy_iiwa[m[K.init();
+   [01;31m[K^~~~~~~[m[K
+make[2]: *** [CMakeFiles/command_robot_moveit.dir/src/command_robot_moveit.cpp.o] Error 1
+make[1]: *** [CMakeFiles/command_robot_moveit.dir/all] Error 2
+make: *** [all] Error 2

@@ -1,0 +1,7 @@
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:15:10:[m[K [01;31m[Kfatal error: [m[K/opt/ros/indigo/include/moveit_msgs/DisplayRobotState.h: No such file or directory
+ #include [01;31m[K</opt/ros/indigo/include/moveit_msgs/DisplayRobotState.h>[m[K
+          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/command_robot_moveit.dir/src/command_robot_moveit.cpp.o] Error 1
+make[1]: *** [CMakeFiles/command_robot_moveit.dir/all] Error 2
+make: *** [all] Error 2

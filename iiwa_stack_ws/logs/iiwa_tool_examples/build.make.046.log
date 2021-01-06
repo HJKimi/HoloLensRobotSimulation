@@ -1,0 +1,12 @@
+[  0%] Built target iiwa_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target command_robot_moveit[0m
+[ 40%] Built target rcvMoveCommand
+[ 40%] Built target rcvNewPose
+[ 60%] Built target rcvARPose
+[35m[1mScanning dependencies of target rcvMappingData[0m
+[ 70%] [32mBuilding CXX object CMakeFiles/command_robot_moveit.dir/src/command_robot_moveit.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/rcvMappingData.dir/src/rcvMappingData.cpp.o[0m
+[ 90%] [32m[1mLinking CXX executable /home/hj/iiwa_stack_ws/devel/.private/iiwa_tool_examples/lib/iiwa_tool_examples/rcvMappingData[0m
+[ 90%] Built target rcvMappingData
+[100%] [32m[1mLinking CXX executable /home/hj/iiwa_stack_ws/devel/.private/iiwa_tool_examples/lib/iiwa_tool_examples/command_robot_moveit[0m
+[100%] Built target command_robot_moveit

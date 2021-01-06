@@ -1,0 +1,4 @@
+In file included from [01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:29:0[m[K:
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/include/numofmesh.h:3:12:[m[K [01;35m[Kwarning: [m[K‘[01m[KmeshNum2[m[K’ initialized and declared ‘[01m[Kextern[m[K’
+ extern int [01;35m[KmeshNum2[m[K = 0;
+            [01;35m[K^~~~~~~~[m[K

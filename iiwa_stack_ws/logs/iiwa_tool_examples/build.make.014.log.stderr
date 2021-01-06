@@ -1,0 +1,25 @@
+CMakeFiles/rcvMappingData.dir/src/rcvMappingData.cpp.o: In function `main':
+rcvMappingData.cpp:(.text+0x1b9): undefined reference to `ReadInt(unsigned char*)'
+collect2: error: ld returned 1 exit status
+make[2]: *** [/home/hj/iiwa_stack_ws/devel/.private/iiwa_tool_examples/lib/iiwa_tool_examples/rcvMappingData] Error 1
+make[1]: *** [CMakeFiles/rcvMappingData.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/rcvNewPose.cpp:2:10:[m[K [01;31m[Kfatal error: [m[K/opt/ros/indigo/include/geometry_msgs/Pose.h: No such file or directory
+ #include [01;31m[K</opt/ros/indigo/include/geometry_msgs/Pose.h>[m[K
+          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/rcvNewPose.dir/src/rcvNewPose.cpp.o] Error 1
+make[1]: *** [CMakeFiles/rcvNewPose.dir/all] Error 2
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/rcvARPose.cpp:2:10:[m[K [01;31m[Kfatal error: [m[K/opt/ros/indigo/include/geometry_msgs/Pose.h: No such file or directory
+ #include [01;31m[K</opt/ros/indigo/include/geometry_msgs/Pose.h>[m[K
+          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/rcvMoveCommand.cpp:2:10:[m[K [01;31m[Kfatal error: [m[K/opt/ros/indigo/include/geometry_msgs/Pose.h: No such file or directory
+ #include [01;31m[K</opt/ros/indigo/include/geometry_msgs/Pose.h>[m[K
+          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/rcvARPose.dir/src/rcvARPose.cpp.o] Error 1
+make[1]: *** [CMakeFiles/rcvARPose.dir/all] Error 2
+make[2]: *** [CMakeFiles/rcvMoveCommand.dir/src/rcvMoveCommand.cpp.o] Error 1
+make[1]: *** [CMakeFiles/rcvMoveCommand.dir/all] Error 2
+make: *** [all] Error 2

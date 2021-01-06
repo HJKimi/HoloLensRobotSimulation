@@ -1,0 +1,25 @@
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:279:55:[m[K [01;31m[Kerror: [m[K‘[01m[Kmy_plan[m[K’ was not declared in this scope
+                                 success = (group.plan([01;31m[Kmy_plan[m[K) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+                                                       [01;31m[K^~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:279:55:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kmyplan[m[K’
+                                 success = (group.plan([01;36m[Kmy_plan[m[K) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+                                                       [01;36m[K^~~~~~~[m[K
+                                                       [32m[Kmyplan[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:330:55:[m[K [01;31m[Kerror: [m[K‘[01m[Kmy_plan[m[K’ was not declared in this scope
+                                 success = (group.plan([01;31m[Kmy_plan[m[K) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+                                                       [01;31m[K^~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:330:55:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kmyplan[m[K’
+                                 success = (group.plan([01;36m[Kmy_plan[m[K) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+                                                       [01;36m[K^~~~~~~[m[K
+                                                       [32m[Kmyplan[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:453:63:[m[K [01;31m[Kerror: [m[K‘[01m[Kmy_plan[m[K’ was not declared in this scope
+                                         success = (group.plan([01;31m[Kmy_plan[m[K) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+                                                               [01;31m[K^~~~~~~[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:453:63:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kmyplan[m[K’
+                                         success = (group.plan([01;36m[Kmy_plan[m[K) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+                                                               [01;36m[K^~~~~~~[m[K
+                                                               [32m[Kmyplan[m[K
+make[2]: *** [CMakeFiles/command_robot_moveit.dir/src/command_robot_moveit.cpp.o] Error 1
+make[1]: *** [CMakeFiles/command_robot_moveit.dir/all] Error 2
+make: *** [all] Error 2

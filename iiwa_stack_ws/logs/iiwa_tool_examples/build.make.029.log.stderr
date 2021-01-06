@@ -1,0 +1,13 @@
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:[m[K In function ‘[01m[Kint main(int, char**)[m[K’:
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:278:60:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[Kmoveit::planning_interface::MoveItErrorCode[m[K’ to ‘[01m[Kbool[m[K’ in assignment
+                                 success = group.plan(myplan[01;31m[K)[m[K;
+                                                            [01;31m[K^[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:328:60:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[Kmoveit::planning_interface::MoveItErrorCode[m[K’ to ‘[01m[Kbool[m[K’ in assignment
+                                 success = group.plan(myplan[01;31m[K)[m[K;
+                                                            [01;31m[K^[m[K
+[01m[K/home/hj/iiwa_stack_ws/src/iiwa_stack_examples/iiwa_tool_examples/src/command_robot_moveit.cpp:450:68:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[Kmoveit::planning_interface::MoveItErrorCode[m[K’ to ‘[01m[Kbool[m[K’ in assignment
+                                         success = group.plan(myplan[01;31m[K)[m[K;
+                                                                    [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/command_robot_moveit.dir/src/command_robot_moveit.cpp.o] Error 1
+make[1]: *** [CMakeFiles/command_robot_moveit.dir/all] Error 2
+make: *** [all] Error 2

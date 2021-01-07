@@ -1,4 +1,4 @@
-# ver1.1.0-alpha
+# v1.1.0-alpha
 
 ### Development Environment
 1. Ubuntu 18.04 LTS

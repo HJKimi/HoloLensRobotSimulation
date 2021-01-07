@@ -20,7 +20,7 @@ Installing method of _iiwa_stack_ is [here][link3].
 
 In my case,
  
-    $ mkdir iiwa_stack_ws && cd iiwa_stack_ws && mkdir src
+    $ mkdir ~/iiwa_stack_ws && cd iiwa_stack_ws && mkdir src
     $ cd src
     $ catkin_init_workspace
     $ git clone https://github.com/IFL-CAMP/iiwa_stack.git iiwa_stack
@@ -52,3 +52,16 @@ export ROS_MASTER_URI=http://${ROS_HOSTNAME}:11311
     $ source ~/.bashrc
     
 With upper setting, you don't have to type $ source devel/setup.bash everytime when you open new terminal.
+
+### How to run the code
+
+    $ roscore
+
+Open another terminal.
+
+    $ cd iiwa_stack_ws
+    $ catkin build
+    $ roslaunch iiwa_tool_examples iiwa_tool_command_moveit.launch
+    
+
+  
